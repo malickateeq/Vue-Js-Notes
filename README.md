@@ -47,6 +47,45 @@
 - v-model="propertyName" Two way binding. Shortcut for v-bind.
 - methodName($event, arg1)
 
+```js
+    // Push items in array
+    this.tasks.push({task});    // It can be object, string or any other data type
+
+    // Remove item in an array
+    // Remove 1 element at 'index'
+    this.tasks.splice(index , 1);
+```
+
+#### Conditional Rendering
+
+```html
+    <!-- Pro Tip: -->
+    <!-- v-show only makes element hidden "display: none" -->
+    <!-- Use this only for visibility purposes -->
+    <p v-show="test.length === 0"> Test is empty. </p>
+
+    <!-- Or if-else -->
+    <!-- This will not render the element in first place -->
+    <p v-if="test.length === 0"> Test is empty. </p>
+    <p v-else-if="test.length === 1"> Test has something. </p>
+    <p v-else="test.length === 0"> Test is not empty. </p>
+```
+
+#### Rendereing List
+
+```html
+    <ul>
+        <li v-for="task in tasks"> {{ task.name }} </li>
+
+        <!-- Get index or key of an item -->
+        <!-- key is a unique identification of each item it's default in HTML not native for Vue Js -->
+        <li v-for="(task, index) in tasks" :key="index"> {{ task.name }} </li>
+
+        <!-- Loog through a range of number. 1 to 10 -->
+        <li v-for="num in 10"> {{ num }} </li>
+    </li>
+```
+
 #### Styling
 
 - Inline Styling
@@ -59,7 +98,6 @@
     <!-- Conditional Style -->
     <p :style="{ borderColor: isSelected ? 'red' : '' }" ></p>
 
-    <!--  -->
 ```
 
 - Class Styling
@@ -78,6 +116,9 @@
 - v-on:submit.prevent
 - v-on:keyup.enter == When enter key pressed.
 - We can add multiple events inside a single HTML element.
+
+<!-- Pro -->
+- @click.stop  This will stop propagation of event and only remains there.
 
 #### Computed Properties
 - Are just like methods, but they only invocked when their dependency change.
