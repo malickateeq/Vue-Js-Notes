@@ -160,44 +160,44 @@ computed: {
 
 #Vue CLI
 
-##Setup
+## Setup
 1. Install Node - check node -v
 2. Install Vue CLI globally
 	- npm install -g @vue/cli
 
-##Setup Vue Project
+## Setup Vue Project
 1. Install Vue
 	- vue create vue_project		// this "vue" we get via Vue CLI
 	- Open the folder code .
 
-##Basics
+## Basics
 - We will import the things we need from "Vue" library then use it like;
 i. import { createApp } from 'vue'		// grabs 'createApp' function from 'vue' lib in node_modules
 ii. import App from './App.vue' 	// import main "Vue" component and mount it to root id "#app" - Root Component for SPAs
 iii. main.js is the starter point for Vue app
 
-###Vue Component
+### Vue Component
 - Every Vue component contains; 1.Template (mand), 2.Script(optional), 3.Style(optional)
 
-###Vue Styles
+### Vue Styles
 - <style></style> 	// apply to all components, as injected in header
 - <style scoped></style> 	// apply to only selected component, also injected in the header: Scoped Global CSS
 
-###Run Vue Project
+### Run Vue Project
 - To Install dependencies: npm install
 - To run: npm run serve
 
-###Template Refs
+### Template Refs
 - ref="testRef"		// user this ref to manipulate elements
 - in js this.$refs.testRef
 
-##Vue Props
+## Vue Props
 - To avoid data inconsistency in child compnents. Always use/declare parent component's data 
 - Passing data from parent components to child or nested components.
 - Send prop => <Modal username="malikateeq" />
 - Accept Prop => props: ['username']
 
-##Custom Events from child components. i.e; close Modal
+## Custom Events from child components. i.e; close Modal
 
 ```js
 	// Child Component Event Emit
@@ -218,7 +218,7 @@ iii. main.js is the starter point for Vue app
 	}
 ```
 
-##Event Modifiers
+## Event Modifiers
 ```js
 	@click.modifierX="func"
 
@@ -228,7 +228,7 @@ iii. main.js is the starter point for Vue app
 	self, right, left etc. 
 ```
 
-##Vue Slots
+## Vue Slots
 - Are design to pass Vue Template to components
 
 ```js
@@ -248,7 +248,7 @@ iii. main.js is the starter point for Vue app
 	</template>
 ```
 
-###Vue Names Slots 
+### Vue Names Slots 
 
 ```js
 	// Parent Component
@@ -274,7 +274,7 @@ iii. main.js is the starter point for Vue app
 	</template>
 ```
 
-###Vue Teleport
+### Vue Teleport
 
 ```js
     <teleport to=".modals">	// .modals class
@@ -284,7 +284,7 @@ iii. main.js is the starter point for Vue app
     </teleport>
 ```
 
-##Vue Lifecycle Hooks
+## Vue Lifecycle Hooks
 
 Created => Mounted to DOM => Updated => Destroyed
 
@@ -297,7 +297,7 @@ Created => Mounted to DOM => Updated => Destroyed
 6. beforeUnmount() 	// Before component remove from the DOM
 7. unmounted() 	// After component remove from the DOM - For cleanups
 
-##Vue Router
+## Vue Router
 
 - Vue intercepts the request and check URL and inject compnents according to routes. 
 - install vue router: select Router when installing vue project
