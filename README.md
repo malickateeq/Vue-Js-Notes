@@ -101,30 +101,8 @@ unmounted()
 // Imp: All the methods will be used in Vue instance's methods, data hierarchy.
 ```
 
-### Vue Js $ref
-```js
-    <p ref="test1"></p>
-    this.$ref // contains global variables key value paris
-    this.$ref.test1 // Will get the entire element with JS attributes
-```
-
-### Vue Js separate template
-
-```js
-    const app =Vue.createApp({
-        template: `
-            HTML, JSX here
-        `,
-        data() {
-
-        }
-        // Data, Methods, Hooks ...
-    });
-
-    // Render the template in app in id="app"
-    app.mount("#app");
-
-```
+### 'this' keyword
+- Refer to Vue object and Vue also merge data attributes/values with 'this' keyword
 
 ### Essentials
 
@@ -243,158 +221,444 @@ computed: {
     }
 ```
 
-#### 'this' keyword
-- Refer to Vue object and Vue also merge data attributes/values with 'this' keyword
 
+#### Vue Js $ref
+```js
+    <p ref="test1"></p>
+    this.$ref // contains global variables key value paris
+    this.$ref.test1 // Will get the entire element with JS attributes
+```
 
+#### Vue Js separate template
 
-#Vue CLI
+```js
+    const app =Vue.createApp({
+        template: `
+            HTML, JSX here
+        `,
+        data() {
 
-## Setup
-1. Install Node - check node -v
-2. Install Vue CLI globally
-	- npm install -g @vue/cli
+        }
+        // Data, Methods, Hooks ...
+    });
 
-## Setup Vue Project
-1. Install Vue
-	- vue create vue_project		// this "vue" we get via Vue CLI
-	- Open the folder code .
+    // Render the template in app in id="app"
+    app.mount("#app");
 
-## Basics
+```
+
+### Vue CLI
+- It helps us create project and a gives us a starting point boilerplate.
+- Add Vetur extension in VS Code
+
+#### Installations
+
+```shell
+    # 1. Install Node - check 
+    node -v
+
+    # 2.Install Vue CLI globally
+    npm install -g @vue/cli
+    
+    # 3. Install Vue
+	vue create vue_project		 # this "vue" we get via Vue CLI
+    
+    # 4. Install dependencies: 
+    npm install
+    
+    # 5. Run: 
+    npm run serve
+```
+
+#### Basics
 - We will import the things we need from "Vue" library then use it like;
 i. import { createApp } from 'vue'		// grabs 'createApp' function from 'vue' lib in node_modules
 ii. import App from './App.vue' 	// import main "Vue" component and mount it to root id "#app" - Root Component for SPAs
 iii. main.js is the starter point for Vue app
 
-### Vue Component
+
+### Vue Components
+
+- Components are reusable, maintainable, loosely connected Vue Js sub-app or nested app
+- Components can split to chunks big applications
+- Components are mini-apps of Vue Js
+- Components contains their own HTML-templates
 - Every Vue component contains; 1.Template (mand), 2.Script(optional), 3.Style(optional)
 
-### Vue Styles
-- <style></style> 	// apply to all components, as injected in header
-- <style scoped></style> 	// apply to only selected component, also injected in the header: Scoped Global CSS
+#### Creating a Component
 
-### Run Vue Project
-- To Install dependencies: npm install
-- To run: npm run serve
+* Component without CLI
+```js
+// 1. Create Vue Component
+// arg1: Component name HTML tags-like
+// arg2: contains Vue App Configurations like data, methods and importantly `template`
+app.component("html-content", { VueComponent });
 
-### Template Refs
-- ref="testRef"		// user this ref to manipulate elements
-- in js this.$refs.testRef
+// Example
+app.component("contact", {
+    template: `<p>Contact</p>`,
+    data() {},
+    methods: {}
+});
 
-## Vue Props
-- To avoid data inconsistency in child compnents. Always use/declare parent component's data 
-- Passing data from parent components to child or nested components.
-- Send prop => <Modal username="malikateeq" />
-- Accept Prop => props: ['username']
+// 2. Use Component
+<contact></contact>
+```
 
-## Custom Events from child components. i.e; close Modal
+1. A Vue Component `PascalCase.vue`
+```js
+// Template for this component
+<template>
+    // HTML
+</template>
+
+// Vue App for this component
+<script>
+    export default {
+        data() {},
+        methods: {},
+        mounted(),
+    }
+</script>
+
+// Styles for this component
+<style></style>
+```
+
+#### Component Registration
+
+1. Registering globally
 
 ```js
+import Task from "./components/Task.vue";
+app.component("task", Task);
+
+// Now we can use Task component anywhere in Vue app 
+<task></task>
+```
+2. Registering locally or for a component only
+
+```js
+<template>
+    <task-comp></task-comp>
+</template>
+
+<script>
+    import Task from "./components/Task.vue";
+    export default {
+        components: {
+            "task-comp": Task
+        }
+    }
+</script>
+```
+
+#### Component Styling
+
+0. Add stylesheets in index.html
+```html
+    <!-- 
+        Only add stylesheets here that will be used throughout the application
+        Otherwise add component based stylesheets in components
+    -->
+```
+
+1. Use styling in Task.vue component
+- Global Styling
+```js
+    <template></template>
+    <script></script>
+
+    // It will always be treated as global styling and will affect entire app
+    <style>
+        // Your stylesheet
+    </style>
+```
+
+- Pro! Scoped or component-only styling
+```js
+    <template></template>
+    <script></script>
+
+    // It will applied to only this Vue component
+    // This will affect the template in this component
+    <style scoped>
+        // Your stylesheet
+    </style>
+```
+
+#### Component Communication
+
+1. Props (Parent to Chil Communication)
+- Pro! Props should not be mutated. Here data is uni-directional and can not be changed in Child Component it can only be changed in parent compoennt.
+
+```js
+// 1. Send Props from parent component
+<contact
+    name="malik atique"
+    phone-number="+92 (304) 8486 653"
+></contact>
+
+// 2. Receive Props in Child Component
+<template>
+    // To avoid conflicts don't use same props names as of in data
+    {{ phoneNumber }}
+</template>
+<script>
+    export default {
+        props: [
+            "name",
+            "phoneNumber"   // Remember no - in here
+        ],
+        // Vue automatically inject the props in `this` like it does with `data` object
+        mounted() {
+            this.phoneNumber;   // +92 (304) 8486 653
+            this.phone-number;   // Invalid
+        } 
+    }
+</script>
+```
+
+- Validating Props
+```js
+export default {
+    props: {
+        // If received name type is not string it will throw error
+        name: String,
+
+        // More validation
+        phone: {
+            type: String,
+            required: true,
+            default: "+920000000000",   // Here ir can also be a function getDefault(){}
+            // Add Validation Logic
+            validator: function (value){ return true; }
+        }
+    }
+}
+```
+
+2. Emitting Custom Events (Child to Parent Communication)
+
+- Emit a custom event from Child Component
+```js
+    // Click on a button, value changed or some other event happened
 	// Child Component Event Emit
-	closeModel(){
-		this.$emit('closeItNow')
+	closeModel()
+    {
+		this.$emit('close-it-now')
 
 		// Pass data to events
-		this.$emit('closeItNow', [12.51])
+		this.$emit('close-it-now', [12.51])
+		this.$emit('close-it-now', 75)
 	}
 ```
 
+- Receive or handle event in parent component
 ```js
 	// Parent Component Event Listening
-	<Modal @closeItNow="closeMyModal">
+    // Listen that where you use/insert the component
+	<Modal
+        // Props
+        title="Some Title" 
+        v-on:close-it-now="closeMyModal"
+        // @close-it-now="closeMyModal"   // OR shorthand
+        >
+    </Model>
 
-	closeMyModal(){
-		// code ..
+	closeMyModal(modelId) {
+		// code `modelId`
 	}
 ```
 
-## Event Modifiers
+- Validating Custom Events from where they will emit or triggered
+- This is used mostly to document code or to let other developers know what to handle
+- It also helps in dev process to handle bugs
 ```js
-	@click.modifierX="func"
+    export default {
+        props: [],
 
-	@click.right="func"	// only call func on mouse right click
-
-	// Modifiers
-	self, right, left etc. 
+        // emits: ["close-it-now"],     // Basic way of telling
+        emits: {
+            "close-it-now": function (params) { return true; Perform event data validation }
+        }
+    }
 ```
 
-## Vue Slots
-- Are design to pass Vue Template to components
-
+- Event emitting passing tunnel
 ```js
-	// Parent Component
-	<Modal>
-		<h1> This will be in slot content <h1>
-		<p> A long paragraph!! </p>
-	</Modal>
+// Parent Component
+<a-component
+    @select-topic="selectTopic"
+></a-component>
+
+// a-component has
+<b-component
+    @select-topic="$emit('selectTopic', $event)"
+></b-component>
+
+// b-component
+<button @click="$emit('selectTopic', 12)">Topic12</button>
+
+// The above will forward event from Child to It's parent then from parent to paret's parent.
+// The event has no use in a-component as it is just passing
+// Vue has an alternative to that called Injecting
 ```
 
+3. Pro! Provide and Inject Pattern of component communication
+- It is a parent to it's sub child components communication
+- It avoid data passing through components
+- It can be use to pass data and custom events (passing method)
+
+- 1. Provide will declare data to share in the parent component
 ```js
-	// Child Component
-	<template>
-		// code..
-		<slot> </slot>	// The slot will render here.
-		// code ..
-	</template>
+    export default {
+        data(){},
+        provide: {
+            // data goes here
+        }
+    }
 ```
 
-### Vue Names Slots 
-
+- 2. Inject will receive data in any nested child component and use it there
 ```js
-	// Parent Component
-	<Modal>
-		<template v-slot:links> 
-			<a href="#">Abc</a>
-			<a href="#">Xyz</a>
-		</template>
-		<h1> This will be in slot content <h1>
-		<p> A long paragraph!! </p>
-	</Modal>
+    export default {
+        data(){},
+        inject: ['dataA'],  // where `dataA` is a key from `provide` object
+    }
+
+    // Then use it just like props
 ```
 
-```js
-	// Child Component
-	<template>
-		// code..
-		<slot> </slot>	// The slot will render here.
-		// code ..
+- Important!
+- Pro! To make sure the `provide` and `data` data is consistent when they're using the same data. `provide` will create a separate brand new data object. Thus not connected with `data`.
 
-		// Use named slots 
-		<slot name="links"></slot>
-	</template>
+```js
+    export default {
+        data(){},
+        provide() {
+            return {
+                // Here provide uses data from data of component.
+                // Thus makes it consistent
+                topics: this.topics
+            }
+        }
+    }
 ```
 
-### Vue Teleport
+
+<!-- OLD Documentation -->
+
+#### Vue Slots
+
+##### Simple Slots
+
+- They allow to receive HTML content and place it within reusable HTML components
+- Pro! Styling in main component does not affect or applied to the slots in another component/slot
+
+1. Create a slot
+```js
+<template>
+    <div class="card box-shadow">
+        <slot></slot>
+    </div>
+</template>
+
+<script>
+    export default {}
+</script>
+
+<style scoped>
+</style>
+```
+
+2. Regsiter the slot just like a components
+```js
+import Card from "./slots/card.vue";
+app.component("card", Card);
+
+```
+
+3. Use the slot
+```js
+    <card>
+        <h2>Title</h2>
+    </card>
+```
+
+
+##### Named Slots
+1. Create Slot
+```js
+<template>
+    <div class="card box-shadow">
+        <header>
+            <slot name="header">
+                // Pro! We can also add default content here!!
+            </slot>
+        </header>
+        <body>
+            // Only one can also be default or unnamed slot
+            <slot></slot>
+        </body>
+    </div>
+</template>
+
+<script>
+    export default {}
+</script>
+
+<style scoped>
+</style>
+```
+2. Use Slot
+```js
+    <card>
+        // Will go to the header slot
+        <h2 v-slot:header>Title</h2>
+
+        // Will go to the default or un-named slot
+        <div v-slot:deafult>
+            <p> Description </p>
+        </div>
+    </card>
+```
+
+##### Advanced on slots
+- `this.$slots` to access all slots within a slot component
+- `this.$slots.header` to access a specific slot. Wether provided or not.
+- v-slot:slot-name === #slot-name  A shorthand.
+- Scoped Slots : learn more about it...
+
+#### Dynamic Components
+- the <component> tag is provided by Vue
+```js
+    // this will render only the component that is active
+    <component v-bind:is="selectedComponent">
+    </component>
+
+    // The component will not be unmounted entirely; their state will be preserved
+    <keep-alive>
+        <component v-bind:is="selectedComponent">
+        </component>
+    </keep-alive>
+```
+
+#### Teleporting Elements
+- Is used to transfer an element to anywhere in the DOM structure.
+- Vue provides <teleport to=""> tag and a prop to achieve that
+- In `to` prop we can select any CSS selector
 
 ```js
-    <teleport to=".modals">	// .modals class
+    // This will render Model in <body>
+    <teleport to="body">	// .modals class
       <Modal>
         <!-- code -->
       </Modal>
     </teleport>
 ```
 
-## Vue Lifecycle Hooks
-
-Created => Mounted to DOM => Updated => Destroyed
-
-0. beforeCreate()	// No access to data or anything
-1. created()	// After component created, no data only template
-2. beforeMount() 	// Just before mounted to DOM. Access data, fetch data.
-3. mounted()	// Active on DOM
-4. beforeUpdate()	// before data re-rendered to the DOM
-5. updated()	// After all updated are reflected to the DOM
-6. beforeUnmount() 	// Before component remove from the DOM
-7. unmounted() 	// After component remove from the DOM - For cleanups
-
 ## Vue Router
 
 - Vue intercepts the request and check URL and inject compnents according to routes. 
 - install vue router: select Router when installing vue project
-- 
-
-```js
-
-
-
-```
