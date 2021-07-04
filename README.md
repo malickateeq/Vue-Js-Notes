@@ -38,6 +38,90 @@
     app.mount("#app");
 
 ```
+- Vue Js can have or run multiple apps concurrently
+
+### Virtual DOM
+
+- Vue Instance (JS) -> Virtual DOM (JS memory) -> Vue Template Rendering -> Browser DOM
+- Vue removes its own syntax/instructions when rendering template to Browser DOM
+- Vue does not rerender everything upon changes BUT only the parts that did change.
+- Vue compares Browser DOM and Virtual DOM and only differences are then rendered onto browser.
+- Behind the scenes Vue does not take entire copies of DOM as Virtual but does some optimisations before.
+
+### Vue Instance Lifecycle
+
+```js
+// Step1. Create and Bind Vue App
+createApp({...});
+mount("#app")
+
+// ==== Life Cycle Hooks ==== //
+
+// Run before the app has fully initialized
+beforeCreate()
+
+// After the app has been creted/initialized
+// Aware of data and other general app configurations
+created()
+
+// :
+// :    Template Compilation
+// v
+beforeMount()
+
+// Upuntil now, nothing appears on the screen
+// Browser rendered Vue tempalte/component on the screen
+mounted()
+
+// /Mounted Vue Instance/
+
+// === Reverse Cycle Starts
+
+// /Data Changes/ Vue UnMounted/
+
+// Before the update has processed
+beforeUpdate()
+
+// After processing update
+// Templete does not unmount in this cycle
+updated()
+
+// After mounted() an app can also me unmounted
+// Unmounted = All vue content wiped out
+
+// Things to save - check for any pending tasks
+beforeUnmount()
+
+// Cleanup code
+unmounted()
+
+// Imp: All the methods will be used in Vue instance's methods, data hierarchy.
+```
+
+### Vue Js $ref
+```js
+    <p ref="test1"></p>
+    this.$ref // contains global variables key value paris
+    this.$ref.test1 // Will get the entire element with JS attributes
+```
+
+### Vue Js separate template
+
+```js
+    const app =Vue.createApp({
+        template: `
+            HTML, JSX here
+        `,
+        data() {
+
+        }
+        // Data, Methods, Hooks ...
+    });
+
+    // Render the template in app in id="app"
+    app.mount("#app");
+
+```
 
 ### Essentials
 
@@ -48,8 +132,11 @@
 - methodName($event, arg1)
 
 ```js
-    // Push items in array
+    // Push items at the end of array
     this.tasks.push({task});    // It can be object, string or any other data type
+
+    // Push items at the start of array
+    this.tasks.unshift({task});    // It can be object, string or any other data type
 
     // Remove item in an array
     // Remove 1 element at 'index'
