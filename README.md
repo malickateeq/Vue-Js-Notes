@@ -84,10 +84,13 @@ beforeUpdate()
 
 // After processing update
 // Templete does not unmount in this cycle
+// Rerendering template's updated part and showing it on browser
 updated()
 
 // After mounted() an app can also me unmounted
 // Unmounted = All vue content wiped out
+// Trigger following by
+app.unmount()
 
 // Things to save - check for any pending tasks
 beforeUnmount()
