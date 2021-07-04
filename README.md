@@ -270,7 +270,7 @@ computed: {
     npm run serve
 ```
 
-#### Basics
+### Basics
 - We will import the things we need from "Vue" library then use it like;
 i. import { createApp } from 'vue'		// grabs 'createApp' function from 'vue' lib in node_modules
 ii. import App from './App.vue' 	// import main "Vue" component and mount it to root id "#app" - Root Component for SPAs
@@ -656,6 +656,37 @@ app.component("card", Card);
         <!-- code -->
       </Modal>
     </teleport>
+```
+
+### Vue Forms
+
+```js
+    <input type="number" v-model.number="age">
+```
+
+- we can use components to as a form field to get form data.
+1. Vue component as an form Input
+```js
+    // v-model for a component
+    // It will send a prop
+    // this `rating` is an initial value for this component input
+    <comp
+        v-model="rating" ref="ratingInput" 
+    >
+    </comp>
+```
+
+2. Vue Component itself
+```js
+export default {
+    props: ["modelValue"],
+    emits: ["update:modelValue"],
+    methods: {
+        getRating(value) {
+            this.$emit("update:modelValue", value);
+        }
+    }
+}
 ```
 
 ## Vue Router
