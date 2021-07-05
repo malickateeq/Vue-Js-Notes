@@ -691,7 +691,79 @@ export default {
 
 ### Vue HTTP Requests
 
+#### `fetch` the default function of JS
 
+##### POST request
+```js
+    fetch("https://www.google.com/add-profile", {
+        method: "POST", // GET, DELETE, PATCH etc.
+        headers: {
+            "Content-Type": "application/json",
+        },
+
+        // Data as object
+        body: {
+            name: "Malik Atique",
+            whatsapp: "+92 (304) 8486 653"
+        }
+        
+        // OR use data as json
+        body: JSON.stringify({
+            name: "Malik Atique", 
+            whatsapp: "+92 (304) 8486 653"
+        })  
+    });
+
+```
+
+##### GET Request
+```js
+    fetch("https://www.google.com/view-profile", {
+        method: "GET", // Or don't specify coz default is GET
+    });
+
+    // OR
+    fetch("https://www.google.com/view-profile")
+    .then(function(response) {
+        if(response.ok) // default ok property to check request status
+        {
+            // Parse data if it is in JSON format
+            // It's another promise
+            return response.json()
+
+            // If data comes as object/array
+            response.data
+        }
+    })
+    .then( (data) => {  // Use arrow function to access vue `this` keyword
+        console.log(data);
+    })
+    // Handle Errors
+    .catch( () => {
+
+    });
+```
+
+##### Handling Erros
+
+```js
+    fetch("https://www.google.com/view-profile")
+    .then( (response) => {
+        // Can alo handle here
+        if(response.ok) {
+            // OK
+        } else {
+            // This throw will be caught in catch()
+            throw new Error("Could not save data!");
+        }
+    })
+    // Handle Errors
+    .catch( (error) => {
+        console.log(error.message); // Output: Could not save data!
+    });
+```
+
+#### `axios` library to make HTTP requests
 
 ## Vue Router
 
