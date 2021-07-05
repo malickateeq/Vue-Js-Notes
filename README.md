@@ -764,8 +764,83 @@ export default {
 ```
 
 #### `axios` library to make HTTP requests
+```js
 
-## Vue Router
+```
 
-- Vue intercepts the request and check URL and inject compnents according to routes. 
-- install vue router: select Router when installing vue project
+### Vue Router
+- It is used to handle SPA from routes/URL.
+- Vue intercepts the request and check URL and inject compnents according to routes.
+
+#### Installation
+- install vue router: select Router when installing vue project 
+- OR run `npm install --save vue-router@next`
+
+#### Configure Router
+- In `main.js` file
+```js
+    import { createRouter, createWebHistory } from "vue-router";
+
+    // 1. Import route components
+    import Task from "./components/Task.vue";
+
+    // 2. Prepare List of routes
+    const routes = [
+        // A simple route
+        {
+            name: "tasks",
+            path: "/tasks",
+            component: Tasks,
+        },
+        // Dynamic route
+        {
+            name: "task",
+            path: "task/:taskId",   // Dynamic "taskId"
+            component: Task,
+        }
+    ];
+
+    // 3. Create Router with configurations
+    const router = createRouter({
+        history: createWebHistory(),    // Use the browser built-in support to remember history
+        routes,
+
+        // Optional: You can set link active classes here
+        linkActiveClass: "active link-expand"
+    });
+
+    // 4. Bind Router with the Vue instance
+    app.use(router);    // use() is use to connect with 3rd party packages
+
+    // 5. Use `vue-router` package built-in component to render route's components
+    // Place this anywhere in Vue App where you want to mount router components
+    <router-view></router-view>
+```
+
+#### Navigation Links
+- Use `<router-link>` built-in component of `vue-router` to display router links
+- Inspect element use router-link default active-link classes to style router links.
+
+```js
+    <router-link
+        to="/tasks"
+    >
+        // Any HTML content will go as slot 
+        <h1>Tasks</h1> 
+    </router-link>
+```
+
+#### Programmatic Navigation
+```js
+    // Redirect to some URL
+    // $router is available via `vue-router` package
+    this.$router.push("/logout");
+
+    // Go Back
+    this.$router.back();
+    // Go forward
+    this.$router.forward();
+
+    // And for more see documentation
+```
+
