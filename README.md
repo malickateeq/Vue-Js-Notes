@@ -1056,3 +1056,146 @@ export default {
     // 2. Access meta-data in component and route-guards
     if(to.meta.needsAuth) // true
 ```
+
+### Vue Animations
+
+- For details [https://v3.vuejs.org/guide/transitions-overview.html#transitions-with-style-bindings](Vue Animations)
+- Core JS animations library [https://greensock.com/](Green Sock)
+
+### Vuex - State Management
+- Vuex is a library for managing global state/data.
+
+#### Getting Started
+
+1. Install Vuex
+```shell
+    npm install --save vuex
+```
+
+2. Create Store
+```js
+    // 1. Import vuex
+    import {createStore} from "vuex";
+
+    // 2. Create store
+    const store = createStore({
+        state() {
+            return {
+                counter: 0
+            }
+        }
+    });
+
+    // 3. Configure store with vue instance
+    app.user(store);
+```
+
+3. Leverage State
+```js
+    // Inside any component in Vue
+    $store.state.counter    // 0
+```
+
+#### State data mutation
+- Always try to prevent direct data mutation as it cause inconsistencies and thus leads to unexpected behaviours.
+- We use mutations to change data in state
+
+```js
+    // 1. Create a mutation
+    const store = createStore({
+        state() {
+            return {
+                counter: 0
+            }
+        },
+        mutations: {
+            // Get the current state as an argument
+            increment(state) {
+                state.counter++;
+            },
+            ...
+        }
+    });
+
+    // 2. Trigger or commit a mutation
+    // arg1: name of the mutation
+    this.$store.commit("increment");
+```
+
+- Argumentative Mutations
+
+```js
+    // 1. Create an argumentative mutation
+    const store = createStore({
+        state() {
+            return {
+                counter: 0
+            }
+        },
+        mutations: {
+            // arg1: The current state
+            // arg2: data/payload from commiting mutation
+            // payload data can be of any type
+            increate(state, payload) {
+                state.counter = state.counter + payload.value;  // or whatever in payload
+            },
+            ...
+        }
+    });
+
+    // 2. Commit argumentative mutator
+    this.$state.commit("increase", { key: "counter", value: 10 });
+```
+
+#### State data accessing via getters
+- Just like mutation, sometimes the value's changed or about to cahnge and we fetch the data. So it can also send inconsistent values.
+
+```js
+    // 1. Create a getter
+    const store = createStore({
+        state() {
+            return {
+                counter: 0
+            }
+        },
+        mutations: {},
+        getters: {
+            // arg1: The current state
+            // arg2: The other getters; needed if it requires to access another state values
+            finalCounter(state) {
+                return state.counter;
+            },
+            resetCounter(state, getters)
+            {
+                if(getters.finalCounter === 100)
+                    state.counter = 0;
+            }
+        }
+    });
+    // 2. Get a value from store
+    this.$store.getters.finalCounter;
+    this.$store.getters.resetCounter;
+```
+
+#### Vuex Actions to perform async changes
+- We can't use mutator for async it is only for sync changes
+- In actions we put async code that will eventually commit a mutation
+
+```js
+    // 1. Create a getter
+    const store = createStore({
+        state() {
+            return {
+                counter: 0
+            }
+        },
+        mutations: {},
+        getters: {},
+        actions: {
+            increment() {
+                
+            }
+        }
+    });
+
+```
