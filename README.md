@@ -797,6 +797,17 @@ export default {
             name: "task",
             path: "task/:taskId",   // Dynamic "taskId"
             component: Task,
+        },
+        // Fallback route must be declared in the end
+        {
+            name: "fallback",
+            path: "/:catchAll(.*)",     // (.*) === Any character combination
+            component: NotFound
+        },
+        // Redirect routes
+        {
+            path: "/",
+            redirect: "/login"
         }
     ];
 
@@ -823,7 +834,11 @@ export default {
 
 ```js
     <router-link
+        // For URL routes
         to="/tasks"
+
+        // OR for named routes
+        :to="{ name: 'tasks', params: { taskId: 23 } }"
     >
         // Any HTML content will go as slot 
         <h1>Tasks</h1> 
@@ -835,6 +850,8 @@ export default {
     // Redirect to some URL
     // $router is available via `vue-router` package
     this.$router.push("/logout");
+    // For named routes
+    this.$router.push({ name: "logout", params: { userId: this.id } });
 
     // Go Back
     this.$router.back();
@@ -844,3 +861,198 @@ export default {
     // And for more see documentation
 ```
 
+#### The $route object
+
+```js
+    // 1. Accessing path
+    this.$router.path;  // tasks/23
+
+    // 2. Getting parameters
+    this.$router.params.taskId   // 23
+
+    // 3. Accessing query params
+    this.$router.query.xyz
+```
+
+#### Nested Routes
+
+```js
+    // 1. Declare child routes
+    const routes = [
+        {
+            path: "/tasks",
+            component: Task,
+            // Children takes an array of routes
+            children: 
+            [
+                {
+                    name: "task-view",
+                    path: ":taskId",   // It will be tasks/123
+                    component: Task,
+                },
+                {
+                    name: "task-todos",
+                    path: "/todos",   // It will be tasks/todo
+                    component: Todo,
+                },
+            ]
+        }
+    ];
+
+    // 2. Add <router-view> in Parent Component to render the child components
+    // In above case add <router-view> in `Task.vue` component
+    <template>
+        <router-view></router-view>
+    </template>
+
+
+    // 3. You can go deeper into Children routes hierarchy
+```
+
+#### Query Parameters
+
+```js
+    // 1. Addin query param manually
+    return "url?sort=asc"
+
+    // 2. Using obkect form
+    return { 
+        name: "tasks", 
+        params: {}, 
+        query: { sort: "asc", orderBy: "created_at" } 
+    };
+
+    // 3. Accessing query params
+    this.$route.query.sort
+```
+
+#### Rendering Multiple Routes
+
+- We achieve multiple router views for a single route by giving them names
+```js
+    // 1. Declare route components
+    const routes = [
+        {
+            path: "/tasks",
+            // Here instead of `component` it is `components`
+            components: {
+                // default for ONE unnamed router-view
+                // key:value => router-view name: component name
+                default: Tasks,
+                footer: Footer 
+            }
+        }
+    ];
+
+    // 2. Give names to router-views
+    <template>
+        <router-view name="footer"></router-view>
+    </template>
+
+```
+
+#### Route scrolling position
+
+```js
+    const router = createRouter({
+        history: createWebHistory(),
+        routes,
+        linkActiveClass: "active link-expand",
+        scrollBehaviour(to, from, savedPosition) {
+            // Learn more about it from the documentation...
+            console.log(to, from, savedPosition);
+        }
+    });
+```
+
+#### Navigation Guard
+
+- Just life route middlewares, for authentication and other purposes
+
+1. Global Guards
+- This will be called first
+```js
+    // 1. Create and Configure router
+    const router = createRouter({});
+
+    // 2. Add middlewares
+    // This function will be called before every route action
+    router.beforeEach(function(to, from, next) {
+        // to => Route object of the page we are going to
+        // from => Route object of the page we are coming from
+        // next => It is a function that we call to either cancel or proceed with this navigation
+        // the `next` will contain middlewares logic
+        
+        // `fasle` Will cancel navigation while `true` will confirm it
+        next(false);    // Not OK
+        next(); // OK
+
+        //  We can pass route as arg to redirect to other page
+        next("/logout");
+        // Or
+        next({ name: "logout", param: { userId: this.id } });
+    });
+```
+- This will be called after each route access
+- Here we can not deny navigation as it has already been approved
+- Useful to log analytics data
+```js
+    // It will run once the navigation is confirms
+    // 
+    router.afterEach(function(to, from, next) {
+        next();
+        // Useful to log analytics data
+    }
+```
+
+2. Individual Route Guards
+- This will be called after global guards
+```js
+    // 1. Declare route components
+    const routes = [
+        {
+            path: "/dashboard",
+            component: Dashboard,
+            beforeEnter(to, from, next) {
+                next();
+            }
+        }
+    ];
+```
+
+3. Component Guards
+- This will be called after individual route guard
+```js
+    export default {
+        beforeRouteEnter(to, from, next) {
+            next();
+        }
+    }
+```
+
+#### Route Leave Guard to prevent unsaved changes
+- It is defined within a component
+- Using this you can prevent the routing while in unmounted hook you can not intercept the route request
+```js
+    export default {
+        beforeRouteLeave(to, from, next) {
+            next();
+        }
+    }
+```
+
+#### Route meta data
+- This provides additional information about a route
+```js
+    // 1. Add meta-data
+    const routes = [
+        {
+            path: "/dashboard",
+            component: Dashboard,
+            meta: { needsAuth: true }
+        }
+    ];
+
+    // 2. Access meta-data in component and route-guards
+    if(to.meta.needsAuth) // true
+```
