@@ -1099,6 +1099,7 @@ export default {
 #### State data mutation
 - Always try to prevent direct data mutation as it cause inconsistencies and thus leads to unexpected behaviours.
 - We use mutations to change data in state
+- Tip: We should not call mutation drectly from a component instead use `actions`
 
 ```js
     // 1. Create a mutation
@@ -1180,9 +1181,10 @@ export default {
 #### Vuex Actions to perform async changes
 - We can't use mutator for async it is only for sync changes
 - In actions we put async code that will eventually commit a mutation
+- Usually we perform HTTP request in actions then commit mutation.
 
 ```js
-    // 1. Create a getter
+    // 1. Create an action
     const store = createStore({
         state() {
             return {
@@ -1192,10 +1194,88 @@ export default {
         mutations: {},
         getters: {},
         actions: {
-            increment() {
-                
+            // The contrext argument is provided by Vuex
+            increment(context) {
+                // Perform async task
+                setTimeout(() => {
+                    // Commit a mutaton
+                    context.commit("increment", 5);
+                }, 4000);
+
+                // In context we dispatch another action
+                // Via context we can access getters
+            },
+            increase(context, payload) {
+                setTimeout(() => {
+                    context.commit("increase", payload.value);
+                }, 4000);
             }
         }
     });
+
+    // 2. Use actions
+    this.$store.dispatch("increase", { key: "counter", value: 10 });
+
+```
+
+#### Vuex Mappers
+- We can access all computed properties as getters via a helper function
+1. Map Getters
+```js
+    import { mapGetters } from "vuex";
+
+    export default {
+        computed: {
+            ...mapGetters(["counter", "tasks"]);    // Provide `getters` in array
+        }
+    }
+```
+
+2. Map Actions
+```js
+    import { mapActions } from "vuex";
+
+    export default {
+        methods: {
+            // Now we can directly call these actions just like function call no neeed to dspatch.
+            ...mapActions(["increment", "getTasks"]);    // Provide `actions` in array then call increment(10)
+
+            // Or customise action names
+            // Same is possible for getters
+            ...mapActions({
+                inc: "increment",    // call inc(10) now
+                newTasks: "getTasks"
+                
+            });
+        }
+    }
+```
+
+#### Organizing stores into modules
+- Here we split one store into multiple maintainable and organised modules
+
+```js
+
+    // 1. Create a module
+    // Just like store
+    const authModule = {
+        state() {
+            return {}
+        },
+        mutation: {},
+        getters: {},
+        actions: {}
+    };
+
+    // 2. Include the module
+    const store = createStore({
+        modules: {
+            authAnyName: authModule, // Everything will work the same. It will merge with main store 
+        },
+        state() {
+            return {}
+        },
+    });
+
 
 ```
