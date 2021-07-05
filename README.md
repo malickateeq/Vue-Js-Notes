@@ -189,7 +189,7 @@ unmounted()
 - @click.stop  This will stop propagation of event and only remains there.
 
 #### Computed Properties
-- Are just like methods, but they only invocked when their dependency change.
+- Are just like methods, but they only invoked when their dependency change.
 ```js
 // Define in the same hierarchy as of 'data' or 'methods'
 computed: {
@@ -1259,11 +1259,18 @@ export default {
     // 1. Create a module
     // Just like store
     const authModule = {
+        // State will get a seperate space
         state() {
             return {}
         },
-        mutation: {},
-        getters: {},
+
+        // All other functionalities will be merged with main/root store
+        // Below you can only access the above declared attribues in the state
+        mutation: {
+        },
+        getters: {
+            somMutation(state, getters, rootState, rootGetters) {};
+        },
         actions: {}
     };
 
@@ -1277,5 +1284,26 @@ export default {
         },
     });
 
+```
+
+- Namespacing modules
+```js
+    // To avoid name conflicts
+
+    // 1. Assign namespace
+    const authModule = {
+        namespace: true,
+    }
+
+    // 2. Register module
+    const store = createStore({
+        modules: {
+            authAnyName: authModule,    // `authAnyName` will be used to refer this module
+        },
+    }):
+
+    // 3. Refer to the module via `authAnyName`
+    this.$store.getters["authAnyName/gettName"];    // Same goes for mutations and actions
+    ...mapGetters("authAnyName", [getter1, getter2]);
 
 ```
