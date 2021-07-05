@@ -261,7 +261,7 @@ computed: {
     npm install -g @vue/cli
     
     # 3. Install Vue
-	vue create vue_project		 # this "vue" we get via Vue CLI
+	clear		 # this "vue" we get via Vue CLI
     
     # 4. Install dependencies: 
     npm install
@@ -676,7 +676,7 @@ app.component("card", Card);
     </comp>
 ```
 
-2. Vue Component itself
+2. Vue Component itself as Input
 ```js
 export default {
     props: ["modelValue"],
@@ -688,6 +688,10 @@ export default {
     }
 }
 ```
+
+### Vue HTTP Requests
+
+
 
 ## Vue Router
 
