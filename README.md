@@ -850,6 +850,10 @@ export default {
     // Redirect to some URL
     // $router is available via `vue-router` package
     this.$router.push("/logout");
+
+    // If you use replace you can't go back to the previous route
+    this.$router.replace("/register");
+    
     // For named routes
     this.$router.push({ name: "logout", params: { userId: this.id } });
 
@@ -1307,3 +1311,79 @@ export default {
     ...mapGetters("authAnyName", [getter1, getter2]);
 
 ```
+
+### Vue Best Practises
+
+#### Vue handling errors
+
+1. In component where we dispatched an action
+```js
+    try {
+        await this.$store.dispatch("tasks/loadTasks");
+    } catch(error) {
+        this.error = error.message || "Server error!";
+    }
+```
+
+2. In actions where we throw the error
+```js
+    if(!response.ok)
+    {
+        const error = new Error(responseData.message || "Something went wrong!")
+        throw error;
+    }
+```
+
+#### Caching HTTP Requests
+
+1. Add an timestamp `lastFetch` in Vuex store to remember whenever we fetch new data.
+- You can add this `lastFetch` timestamp for main store or for all modules. It will be up to the app architecture.
+```js
+    // 1. In store
+    state() {
+        return {
+            lastFetch: new Date().getTime(),
+        }
+    },
+
+    // After HTTP request
+    context.commit("setFetchTimestamp");
+```
+
+2. Check if the `lastFetch` is more than X-minutes
+```js
+    // Getters
+    shouldFetch(state)
+    {
+        const lastFetch = state.lastFetch;
+        if(!lastFetch)
+            return true;
+        
+        const currentTimestamp = new Date().getTime();
+        return (currentTimestamp - lastFetch ) / 1000 > (60 * 1);   // 1 Minute(s) Ago
+    }
+```
+
+3. Make HTTP Request
+- Tip! You can specify in action for `forceFetch`
+
+```js
+    // Please specify namespace if used in all
+    if(!context.getters.shouldUpdate && !payload.forceFetch) 
+    {
+        // Just return don't proceed with the async request
+        return;
+    }
+
+```
+
+### Vue App Planning
+- Detailed planning is over kill, but a rough plan won't hurt.
+1. List Key features
+2. List sub features of each key feature
+3. Plan Data models, Vuex store modules. DB schema-like.
+4. Design Layout of the application
+5. Split design into components
+6. Identify parent-child and siblings components
+7. Roughly mention key-routes
+
