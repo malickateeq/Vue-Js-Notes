@@ -1334,6 +1334,12 @@ export default {
     }
 ```
 
+#### Using `localStorage`
+
+- Pro! You should use `localStorage` when you want to store data that can't be fetch from database.
+- Like cart items, authentication tokens, cookies, policy options etcetra.
+- Avoid using `localStorage` for main data as it will take up space in local browser storage.
+
 #### Caching HTTP Requests
 
 1. Add an timestamp `lastFetch` in Vuex store to remember whenever we fetch new data.
@@ -1387,3 +1393,38 @@ export default {
 6. Identify parent-child and siblings components
 7. Roughly mention key-routes
 
+### Deploying and optimization Vue Apps
+
+#### Basic Optimization
+- Goal: Prevent downloading all the Vue project source code in advance on to browser. 
+- Now the default behaviour is; all the components and with files are loading all the time in each request.
+- What we need is Lazy or Async loading. This is to say only download the code we need.
+
+1. Rules#1 Only import it when you need it.
+2. Let Vue handle prevent downloading unused components
+```js
+    // 1. Import defineAsyncComponent
+    import { createApp, defineAsyncComponent } from "vue";
+
+    // 2. Remove component import
+    // import DialogComponent from "./components/DialogComponent.vue";
+
+    // 3. Define func
+    // Vue will call this component when this needed
+    const DialogComponent = defineAsyncComponent( () => {
+        return import("./components/DialogComponent.vue");        
+    } );
+```
+
+#### Deployment
+
+1. Run Vue app production build command from Vue CLI
+
+- This will process and optimise all files, minified them and merge them.
+- Then you will get `dist` folder that holds
+```shell
+    npm run build
+```
+
+2. Now host this `dist` to your web server. 
+3. Rewrite all URLs to index.html for SPA. Ignore all other URL handling on serverside. Because we want to use client router.
