@@ -1428,3 +1428,142 @@ export default {
 
 2. Now host this `dist` to your web server. 
 3. Rewrite all URLs to index.html for SPA. Ignore all other URL handling on serverside. Because we want to use client router.
+
+### Compositions APIs
+
+#### Possible limitations of options API (Contemporary)
+
+1. Code that belongs together logically is split up across multiple options (data, methods, computed)
+2. Reusing logic across components can be tricky or cumbersome
+
+3. We will add data, functions in setup then export it and it will be available in the component.
+
+#### Replacing `data()` with `refs`
+- We will use ref that will reference to our data values.
+```js
+    // 1. Creare a reactive property
+    // The two new features from Vue3 for managing data
+    import { ref } from "vue";
+    
+    export default {
+        setup() {
+            // ref creates a reactive value
+            // Vue can track this value's lifecycle likfe before with data
+            const name = ref("Malik Atique");
+            const degree = ref({ name: "CS", year: "2019" });
+
+            // To cahnge value
+            name.value = "new name";
+
+            // Make it available for the component
+            return { userName: name, degree: degree };
+        }
+    }
+
+    // 2. Use ref values
+    <template>
+        {{ userName }}
+    </template>
+```
+
+#### Use `reactive` for objects instead of `refs`
+
+```js
+    import { reactive } from "vue";
+
+    // It only accepts object
+    const degree = reactive({ name: "CS", year: "2019" });
+    
+    return { degree: degree };
+```
+
+#### Replacing `methods` with regular functions
+
+```js
+    import { reactive } from "vue";
+
+    export default {
+        setup() {
+            // It only accepts object
+            const degree = reactive({ name: "CS", year: "2019" });
+            
+            function setDegree(name) {
+                degree.name = name;
+            }
+
+            return { degree: degree, setDegree: setDegree };
+        }
+    }
+```
+
+#### All in on setup()
+- Pro! We can use the mix of options and composition APIs
+```js
+    import { ref, reactive, computed, watch, provides, inject } from "vue";
+
+    // Lifecycle hooks
+    import { 
+        onBeforeMount,  // 1 
+        onMounted, // 2
+        onBeforeUpdate, //3  
+        onUpdated, // 4
+        onBeforeUnmount, // 5
+        onUnmounted, // 6
+    } from "vue";
+
+    // Use router
+    import { useRoute } from "vue-router";
+
+    // Use Vuex
+    import { useStore } from "vuex";
+    
+    export default {
+        props: ["test"],
+        setup(props, context) {
+            // Same var can be used for v-model
+            const name = ref("malik");
+            
+            function setName(event) {
+                name.value = event.target.value;
+            }
+    
+            // Computed properties are readonly
+            const compFullName = computed(function(){
+                return name.value + " Doe";
+            });
+    
+            watch(name, function(newValue, oldValue){
+                console.log(newValue, oldValue);
+            });
+    
+            watch([name, age], function(newValue, oldValue){
+                console.log(newValue[0], oldValue[0]);
+            });
+
+            // 1. Provide at one place
+            provide("userAge", age);
+            // 2. Inject/Use at other
+            const age = inject("age");
+
+            // Emit events
+            context.emit("close-modal");
+    
+            // Lifecycle hook
+            onBeforeMount(function (){
+                // ...
+            });
+
+            // Vue Router
+            const route = useRoute();
+            // To get all params
+            console.log( route.params );
+            router.push("/abc");
+
+            // Vuex
+            const store = useStore();
+
+            return { name, setName: setName, compFullName };
+        };
+    };
+
+```
