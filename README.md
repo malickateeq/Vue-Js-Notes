@@ -1383,52 +1383,6 @@ export default {
 
 ```
 
-### Vue App Planning
-- Detailed planning is over kill, but a rough plan won't hurt.
-1. List Key features
-2. List sub features of each key feature
-3. Plan Data models, Vuex store modules. DB schema-like.
-4. Design Layout of the application
-5. Split design into components
-6. Identify parent-child and siblings components
-7. Roughly mention key-routes
-
-### Deploying and optimization Vue Apps
-
-#### Basic Optimization
-- Goal: Prevent downloading all the Vue project source code in advance on to browser. 
-- Now the default behaviour is; all the components and with files are loading all the time in each request.
-- What we need is Lazy or Async loading. This is to say only download the code we need.
-
-1. Rules#1 Only import it when you need it.
-2. Let Vue handle prevent downloading unused components
-```js
-    // 1. Import defineAsyncComponent
-    import { createApp, defineAsyncComponent } from "vue";
-
-    // 2. Remove component import
-    // import DialogComponent from "./components/DialogComponent.vue";
-
-    // 3. Define func
-    // Vue will call this component when this needed
-    const DialogComponent = defineAsyncComponent( () => {
-        return import("./components/DialogComponent.vue");        
-    } );
-```
-
-#### Deployment
-
-1. Run Vue app production build command from Vue CLI
-
-- This will process and optimise all files, minified them and merge them.
-- Then you will get `dist` folder that holds
-```shell
-    npm run build
-```
-
-2. Now host this `dist` to your web server. 
-3. Rewrite all URLs to index.html for SPA. Ignore all other URL handling on serverside. Because we want to use client router.
-
 ### Compositions APIs
 
 #### Possible limitations of options API (Contemporary)
@@ -1567,3 +1521,134 @@ export default {
     };
 
 ```
+
+### Mixins (Reusing Code)
+
+#### Components mixins
+- Create a file in mixins/file.js
+- Write any component's `export default` code
+- Import it and use it
+
+- `alert.js`
+```js
+    // import components if required
+    export default {
+        props: ["date"],
+        data()
+        {
+            return {
+                message: "Not found!",
+            }
+        },
+        methods: {
+            setMessage(msg)
+            {
+                this.message = msg;
+            }
+        }
+        mounted () {
+
+        }
+    }
+```
+
+- Use template
+
+```js
+    import alertMixin from "./mixins/alert.js";
+    
+    export default {
+        // It will merge automatically with its own options
+        // If same options or vars exists the component will override the mixins
+        mixins: [ alertMixin ]
+    }
+```
+
+#### Global mixins
+```js
+    // 1. Create a mixin
+    export default {
+        // The component and mixins both lifecycles will be executed
+        // It will be executed first
+        mounted() {
+            console.log("A component is mounted!");
+        }
+    }
+
+    // 2. Register a global mixin
+    import loggerMixin from "./mixins/logger.js";
+    app.mixin(loggerMixin);
+```
+
+#### Hooks or Compositions API reusables
+
+```js
+    // Create mixin
+    function useAlert() {
+        setup(props, context) {
+            // Same var can be used for v-model
+            const name = ref("malik");
+            
+            function setName(event) {
+                name.value = event.target.value;
+            }
+
+            // Pull these when need to use in array
+            return { setName, name };
+        }
+    }
+    export default useAlert;
+
+
+    // Use mixin
+    import useAlert from "./hooks/useAlert.js";
+    const [ setName, name  ] = useAlert();
+```
+
+
+
+### Vue App Planning
+- Detailed planning is over kill, but a rough plan won't hurt.
+1. List Key features
+2. List sub features of each key feature
+3. Plan Data models, Vuex store modules. DB schema-like.
+4. Design Layout of the application
+5. Split design into components
+6. Identify parent-child and siblings components
+7. Roughly mention key-routes
+
+### Deploying and optimization Vue Apps
+
+#### Basic Optimization
+- Goal: Prevent downloading all the Vue project source code in advance on to browser. 
+- Now the default behaviour is; all the components and with files are loading all the time in each request.
+- What we need is Lazy or Async loading. This is to say only download the code we need.
+
+1. Rules#1 Only import it when you need it.
+2. Let Vue handle prevent downloading unused components
+```js
+    // 1. Import defineAsyncComponent
+    import { createApp, defineAsyncComponent } from "vue";
+
+    // 2. Remove component import
+    // import DialogComponent from "./components/DialogComponent.vue";
+
+    // 3. Define func
+    // Vue will call this component when this needed
+    const DialogComponent = defineAsyncComponent( () => {
+        return import("./components/DialogComponent.vue");        
+    } );
+```
+
+#### Deployment
+
+1. Run Vue app production build command from Vue CLI
+
+- This will process and optimise all files, minified them and merge them.
+- Then you will get `dist` folder that holds
+```shell
+    npm run build
+```
+
+2. Now host this `dist` to your web server. 
+3. Rewrite all URLs to index.html for SPA. Ignore all other URL handling on serverside. Because we want to use client router.
